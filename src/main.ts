@@ -175,7 +175,21 @@ function render(): void {
   calendar.replaceChildren(...result.months.map(month => renderMonth(month, weekStartsOn)))
 }
 
-datesInput.addEventListener('input', render)
+const COMMIT_INPUT_TYPES = new Set([
+  // https://w3c.github.io/input-events/#interface-InputEvent-Attributes
+  'insertLineBreak',
+  'insertParagraph',
+  'insertFromPaste',
+  'insertFromDrop',
+  'deleteByCut',
+  'historyUndo',
+  'historyRedo',
+])
+
+datesInput.addEventListener('input', event => {
+  if (event instanceof InputEvent && COMMIT_INPUT_TYPES.has(event.inputType)) render()
+})
+datesInput.addEventListener('change', render)
 formatInput.addEventListener('input', render)
 for (const radio of document.querySelectorAll('input[name="week-start"]')) {
   radio.addEventListener('change', render)

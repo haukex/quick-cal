@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "parcel src/index.html --dist-dir dist --host 0.0.0.0",
+    "dev": "parcel src/index.html --dist-dir dist --host 127.0.0.1",
     "build": "parcel build src/index.html --dist-dir dist --public-url ./",
     "test": "node --test src/test/*.test.mjs",
     "lint": "eslint src eslint.config.js",
