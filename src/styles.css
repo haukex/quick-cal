@@ -115,7 +115,7 @@ legend {
 }
 
 textarea,
-input[type="text"] {
+#date-format {
   width: 100%;
   border: 1px solid var(--border-strong);
   border-radius: 0.65rem;
@@ -133,14 +133,14 @@ textarea {
   line-height: 1.55;
 }
 
-input[type="text"] {
+#date-format {
   min-height: 2.7rem;
   padding: 0.55rem 0.75rem;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 textarea:focus,
-input[type="text"]:focus {
+#date-format:focus {
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgb(24 119 71 / 15%);
 }
