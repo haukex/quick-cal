@@ -6,7 +6,66 @@
     <title>Quick Calendar</title>
   </head>
   <body>
-    <div id="app"></div>
+    <header class="page-header">
+      <p class="eyebrow">Quick Calendar</p>
+    </header>
+
+    <main>
+      <details class="input-panel" open>
+        <summary>Dates and display settings</summary>
+        <div class="input-panel__body">
+          <div class="field">
+            <label for="dates">Dates <span>one per line</span></label>
+            <textarea
+              id="dates"
+              rows="7"
+              spellcheck="false"
+              placeholder="2026-06-18&#10;2026-06-24&#10;2026-06-24"
+            ></textarea>
+          </div>
+
+          <div id="input-feedback" class="input-feedback" role="alert" aria-live="assertive" hidden></div>
+
+          <div class="settings-row">
+            <div class="field format-field">
+              <label for="date-format">Date format</label>
+              <input id="date-format" type="text" value="yyyy-MM-dd" spellcheck="false">
+            </div>
+
+            <fieldset>
+              <legend>First day of the week</legend>
+              <div class="radio-group">
+                <label><input type="radio" name="week-start" value="1" checked> Monday</label>
+                <label><input type="radio" name="week-start" value="0"> Sunday</label>
+              </div>
+            </fieldset>
+          </div>
+
+          <details class="format-help">
+            <summary>Date format help</summary>
+            <div class="format-help__body">
+              <p>Formats use case-sensitive <a href="https://date-fns.org/v4.4.0/docs/parse" target="_blank"><code>date-fns</code></a> tokens:</p>
+              <dl>
+                <div><dt><code>M</code></dt><dd>Month without padding, such as <code>1</code></dd></div>
+                <div><dt><code>MM</code></dt><dd>Two-digit month, such as <code>01</code></dd></div>
+                <div><dt><code>d</code></dt><dd>Day without padding, such as <code>5</code></dd></div>
+                <div><dt><code>dd</code></dt><dd>Two-digit day, such as <code>05</code></dd></div>
+                <div><dt><code>yy</code></dt><dd>Two-digit year, resolved to the most recent non-future year</dd></div>
+                <div><dt><code>yyyy</code></dt><dd>Four-digit year, such as <code>2026</code></dd></div>
+              </dl>
+              <p>Examples: <code>yyyy-MM-dd</code>, <code>dd.MM.yy</code>, <code>MM/dd/yy</code>.</p>
+            </div>
+          </details>
+        </div>
+      </details>
+
+      <section class="calendar-region" aria-labelledby="calendar-heading" aria-live="polite">
+        <h2 id="calendar-heading" class="visually-hidden">Generated calendar</h2>
+        <p id="calendar-status" class="calendar-status">Enter at least one date to build a calendar.</p>
+        <div id="calendar" class="calendar"></div>
+      </section>
+    </main>
+
     <script type="module" src="./main.ts"></script>
   </body>
 </html>
