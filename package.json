@@ -1,0 +1,21 @@
+{
+  "name": "quick-cal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "parcel src/index.html --dist-dir dist --host 0.0.0.0",
+    "build": "parcel build src/index.html --dist-dir dist --public-url ./",
+    "test": "node --test src/test/*.test.mjs",
+    "lint": "eslint src eslint.config.js",
+    "check": "npm run test && npm run lint && npm run typecheck",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "parcel": "^2.16.4",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.61.1"
+  }
+}

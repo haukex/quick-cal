@@ -1,0 +1,18 @@
+{
+    "files.eol": "\n",
+    "files.trimTrailingWhitespace": true,
+    "editor.rulers": [ 100 ],
+    "editor.tabSize": 2,
+    "indentRainbow.ignoreErrorLanguages": [
+        "python",
+        "markdown"
+    ],
+    "cSpell.language": "en,en-US",
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "typescriptreact"
+    ],
+}
+/* vim: set filetype=javascript ts=4 sw=4 expandtab : */
