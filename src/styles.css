@@ -320,9 +320,21 @@ input[type="radio"] {
   text-align: center;
 }
 
-.week-number--selected {
+.week-number--single {
   color: var(--green);
   background: var(--green-soft);
+  font-weight: 800;
+}
+
+.week-number--multiple {
+  color: var(--yellow);
+  background: var(--yellow-soft);
+  font-weight: 800;
+}
+
+.week-number--gap {
+  color: var(--error);
+  background: var(--error-soft);
   font-weight: 800;
 }
 

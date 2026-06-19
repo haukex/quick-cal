@@ -7,6 +7,8 @@ import {
   endOfWeek,
   format,
   getISOWeek,
+  isAfter,
+  isBefore,
   isSameMonth,
   isValid,
   max,
@@ -43,9 +45,11 @@ export interface CalendarDay {
 
 export interface CalendarWeek {
   readonly isoWeek: number
-  readonly hasSelection: boolean
+  readonly highlight: CalendarWeekHighlight
   readonly days: readonly CalendarDay[]
 }
+
+export type CalendarWeekHighlight = 'single' | 'multiple' | 'gap' | null
 
 export interface CalendarMonth {
   readonly key: string
@@ -142,6 +146,8 @@ function buildWeek(
   month: Date,
   weekStartsOn: WeekStartsOn,
   occurrences: ReadonlyMap<string, number>,
+  firstSelectedWeek: Date,
+  lastSelectedWeek: Date,
 ): CalendarWeek {
   const dates = Array.from({ length: 7 }, (_, index) => addDays(weekStart, index))
   const thursdayOffset = weekStartsOn === 0 ? 4 : 3
@@ -156,9 +162,18 @@ function buildWeek(
     }
   })
 
+  const selectedDayCount = days.filter(day => day.occurrences > 0).length
+  const highlight = selectedDayCount === 1
+    ? 'single'
+    : selectedDayCount > 1
+      ? 'multiple'
+      : isAfter(weekStart, firstSelectedWeek) && isBefore(weekStart, lastSelectedWeek)
+        ? 'gap'
+        : null
+
   return {
     isoWeek: getISOWeek(addDays(weekStart, thursdayOffset)),
-    hasSelection: days.some(day => day.occurrences > 0),
+    highlight,
     days,
   }
 }
@@ -171,8 +186,10 @@ export function buildCalendarMonths(
 ): CalendarBuildResult {
   if (dates.length === 0) return { months: [], rangeError: null }
 
-  const firstMonth = startOfMonth(min(Array.from(dates)))
-  const lastMonth = startOfMonth(max(Array.from(dates)))
+  const firstDate = min(Array.from(dates))
+  const lastDate = max(Array.from(dates))
+  const firstMonth = startOfMonth(firstDate)
+  const lastMonth = startOfMonth(lastDate)
   const monthCount = differenceInCalendarMonths(lastMonth, firstMonth) + 1
 
   if (monthCount > maxMonths) {
@@ -182,14 +199,23 @@ export function buildCalendarMonths(
     }
   }
 
+  const weekOptions = { weekStartsOn }
+  const firstSelectedWeek = startOfWeek(firstDate, weekOptions)
+  const lastSelectedWeek = startOfWeek(lastDate, weekOptions)
   const months = eachMonthOfInterval({ start: firstMonth, end: lastMonth }).map(month => {
-    const weekOptions = { weekStartsOn }
     const gridStart = startOfWeek(startOfMonth(month), weekOptions)
     const gridEnd = endOfWeek(endOfMonth(month), weekOptions)
     const weeks = eachWeekOfInterval(
       { start: gridStart, end: gridEnd },
       weekOptions,
-    ).map(weekStart => buildWeek(weekStart, month, weekStartsOn, occurrences))
+    ).map(weekStart => buildWeek(
+      weekStart,
+      month,
+      weekStartsOn,
+      occurrences,
+      firstSelectedWeek,
+      lastSelectedWeek,
+    ))
 
     return {
       key: format(month, 'yyyy-MM'),

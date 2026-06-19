@@ -79,7 +79,7 @@ describe('buildCalendarMonths', () => {
     const parsed = validInput('2020-12-31\n2021-01-01', 'yyyy-MM-dd')
     const result = buildCalendarMonths(parsed.dates, parsed.occurrences, 1)
     const january = result.months.find(month => month.key === '2021-01')
-    const selectedWeek = january?.weeks.find(week => week.hasSelection)
+    const selectedWeek = january?.weeks.find(week => week.highlight === 'multiple')
 
     assert.equal(selectedWeek?.isoWeek, 53)
   })
@@ -91,7 +91,33 @@ describe('buildCalendarMonths', () => {
 
     assert.equal(firstWeek?.days[0]?.dateKey, '2020-12-27')
     assert.equal(firstWeek?.isoWeek, 53)
-    assert.equal(firstWeek?.hasSelection, true)
+    assert.equal(firstWeek?.highlight, 'single')
+  })
+
+  it('classifies weeks by distinct selected days rather than occurrences', () => {
+    const oneDayRepeated = validInput('2024-01-10\n2024-01-10', 'yyyy-MM-dd')
+    const twoDays = validInput('2024-01-10\n2024-01-10\n2024-01-12', 'yyyy-MM-dd')
+    const oneDayWeek = buildCalendarMonths(
+      oneDayRepeated.dates,
+      oneDayRepeated.occurrences,
+      1,
+    ).months[0]?.weeks.find(week => week.days.some(day => day.dateKey === '2024-01-10'))
+    const twoDayWeek = buildCalendarMonths(
+      twoDays.dates,
+      twoDays.occurrences,
+      1,
+    ).months[0]?.weeks.find(week => week.days.some(day => day.dateKey === '2024-01-10'))
+
+    assert.equal(oneDayWeek?.highlight, 'single')
+    assert.equal(twoDayWeek?.highlight, 'multiple')
+  })
+
+  it('marks empty weeks inside the selected range as gaps', () => {
+    const parsed = validInput('2024-01-10\n2024-01-24', 'yyyy-MM-dd')
+    const january = buildCalendarMonths(parsed.dates, parsed.occurrences, 1).months[0]
+    const highlights = january?.weeks.map(week => week.highlight)
+
+    assert.deepEqual(highlights, [null, 'single', 'gap', 'single', null])
   })
 
   it('allows 600 months and rejects 601 months', () => {

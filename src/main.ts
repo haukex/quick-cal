@@ -106,10 +106,18 @@ function renderDay(day: CalendarDay): HTMLTableCellElement {
 
 function renderWeek(week: CalendarWeek): HTMLTableRowElement {
   const row = makeElement('tr')
-  const weekClass = week.hasSelection ? 'week-number week-number--selected' : 'week-number'
+  const highlightClass = week.highlight === null ? '' : ` week-number--${week.highlight}`
+  const highlightLabel = week.highlight === 'single'
+    ? ', one selected day'
+    : week.highlight === 'multiple'
+      ? ', multiple selected days'
+      : week.highlight === 'gap'
+        ? ', no selected days between the first and last selected weeks'
+        : ''
+  const weekClass = `week-number${highlightClass}`
   const weekNumber = makeElement('th', weekClass, String(week.isoWeek))
   weekNumber.scope = 'row'
-  weekNumber.setAttribute('aria-label', `ISO week ${week.isoWeek}`)
+  weekNumber.setAttribute('aria-label', `ISO week ${week.isoWeek}${highlightLabel}`)
   row.append(weekNumber, ...week.days.map(renderDay))
   return row
 }

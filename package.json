@@ -9,7 +9,8 @@
     "test": "node --test src/test/*.test.mjs",
     "lint": "eslint src eslint.config.js",
     "check": "npm run test && npm run lint && npm run typecheck",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist .parcel-cache"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
