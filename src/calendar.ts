@@ -45,6 +45,7 @@ export interface CalendarDay {
 
 export interface CalendarWeek {
   readonly isoWeek: number
+  readonly selectedDayCount: number
   readonly highlight: CalendarWeekHighlight
   readonly days: readonly CalendarDay[]
 }
@@ -173,6 +174,7 @@ function buildWeek(
 
   return {
     isoWeek: getISOWeek(addDays(weekStart, thursdayOffset)),
+    selectedDayCount,
     highlight,
     days,
   }

@@ -96,6 +96,12 @@ function renderDay(day: CalendarDay): HTMLTableCellElement {
       ? `, selected ${day.occurrences} times`
       : ''
   cell.setAttribute('aria-label', `${day.label}${occurrenceText}`)
+  if (day.occurrences > 0) {
+    const times = day.occurrences === 1 ? 'time' : 'times'
+    cell.title = `${day.dateKey} — appears ${day.occurrences} ${times} in the list`
+  } else {
+    cell.title = day.dateKey
+  }
 
   const dayNumber = makeElement('span', 'day__number', String(day.dayNumber))
   if (day.occurrences === 1) dayNumber.classList.add('day__number--single')
@@ -107,17 +113,25 @@ function renderDay(day: CalendarDay): HTMLTableCellElement {
 function renderWeek(week: CalendarWeek): HTMLTableRowElement {
   const row = makeElement('tr')
   const highlightClass = week.highlight === null ? '' : ` week-number--${week.highlight}`
-  const highlightLabel = week.highlight === 'single'
-    ? ', one selected day'
-    : week.highlight === 'multiple'
-      ? ', multiple selected days'
-      : week.highlight === 'gap'
-        ? ', no selected days between the first and last selected weeks'
-        : ''
   const weekClass = `week-number${highlightClass}`
   const weekNumber = makeElement('th', weekClass, String(week.isoWeek))
   weekNumber.scope = 'row'
-  weekNumber.setAttribute('aria-label', `ISO week ${week.isoWeek}${highlightLabel}`)
+  const selectedDays = week.highlight === 'single'
+    ? ' — 1 selected day'
+    : week.highlight === 'multiple'
+      ? ` — ${week.selectedDayCount} selected days`
+      : week.highlight === 'gap'
+        ? ' — 0 selected days'
+        : ''
+  weekNumber.title = `WK ${String(week.isoWeek)}${selectedDays}`
+  const highlightLabel = week.highlight === 'single'
+    ? ', one selected day'
+    : week.highlight === 'multiple'
+      ? `, ${week.selectedDayCount} selected days`
+      : week.highlight === 'gap'
+        ? ', no selected days'
+        : ''
+  weekNumber.setAttribute('aria-label', `Week ${week.isoWeek}${highlightLabel}`)
   row.append(weekNumber, ...week.days.map(renderDay))
   return row
 }
@@ -132,12 +146,14 @@ function renderMonth(month: CalendarMonth, weekStartsOn: WeekStartsOn): HTMLElem
   const headerRow = makeElement('tr')
   const weekHeading = makeElement('th', 'week-heading', 'Wk')
   weekHeading.scope = 'col'
-  weekHeading.setAttribute('aria-label', 'ISO week number')
+  weekHeading.title = 'ISO 8601 week number'
+  weekHeading.setAttribute('aria-label', 'ISO 8601 week number')
   headerRow.append(weekHeading)
 
   for (const [letter, name] of WEEKDAY_NAMES[weekStartsOn]) {
     const weekday = makeElement('th', 'weekday', letter)
     weekday.scope = 'col'
+    weekday.title = name
     weekday.setAttribute('aria-label', name)
     headerRow.append(weekday)
   }

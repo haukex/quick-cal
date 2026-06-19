@@ -109,15 +109,19 @@ describe('buildCalendarMonths', () => {
     ).months[0]?.weeks.find(week => week.days.some(day => day.dateKey === '2024-01-10'))
 
     assert.equal(oneDayWeek?.highlight, 'single')
+    assert.equal(oneDayWeek?.selectedDayCount, 1)
     assert.equal(twoDayWeek?.highlight, 'multiple')
+    assert.equal(twoDayWeek?.selectedDayCount, 2)
   })
 
   it('marks empty weeks inside the selected range as gaps', () => {
     const parsed = validInput('2024-01-10\n2024-01-24', 'yyyy-MM-dd')
     const january = buildCalendarMonths(parsed.dates, parsed.occurrences, 1).months[0]
     const highlights = january?.weeks.map(week => week.highlight)
+    const selectedDayCounts = january?.weeks.map(week => week.selectedDayCount)
 
     assert.deepEqual(highlights, [null, 'single', 'gap', 'single', null])
+    assert.deepEqual(selectedDayCounts, [0, 1, 0, 1, 0])
   })
 
   it('allows 600 months and rejects 601 months', () => {
