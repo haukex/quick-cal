@@ -214,7 +214,7 @@ datesInput.addEventListener('input', event => {
   if (event instanceof InputEvent && COMMIT_INPUT_TYPES.has(event.inputType)) render()
 })
 datesInput.addEventListener('change', render)
-formatInput.addEventListener('input', render)
+formatInput.addEventListener('change', render)
 for (const radio of document.querySelectorAll('input[name="week-start"]')) {
   radio.addEventListener('change', render)
 }
