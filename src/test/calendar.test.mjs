@@ -54,6 +54,7 @@ describe('parseDateInput', () => {
   })
 
   it('reports malformed or protected date-fns formats', () => {
+    console.warn('Expected date-fns warning follows: this test intentionally uses legacy uppercase tokens.')
     const result = parseDateInput('2024-01-05', 'YYYY-MM-DD', TODAY)
 
     assert.notEqual(result.formatError, null)
