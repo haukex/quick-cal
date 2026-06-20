@@ -31,6 +31,8 @@ const calendarElement = document.querySelector('#calendar')
 if (!(calendarElement instanceof HTMLDivElement)) throw new Error('Missing calendar container.')
 const calendar = calendarElement
 
+const MAX_VISIBLE_ERRORS = 5
+
 const WEEKDAY_NAMES = {
   [SUNDAY]: [
     ['S', 'Sunday'],
@@ -75,7 +77,13 @@ function setFeedback(messages: readonly string[]): void {
 
   const heading = makeElement('p', 'input-feedback__heading', 'Please fix the following:')
   const list = makeElement('ul')
-  for (const message of messages) list.append(makeElement('li', undefined, message))
+  for (const message of messages.slice(0, MAX_VISIBLE_ERRORS)) {
+    list.append(makeElement('li', undefined, message))
+  }
+  if (messages.length > MAX_VISIBLE_ERRORS) {
+    const hiddenCount = messages.length - MAX_VISIBLE_ERRORS
+    list.append(makeElement('li', undefined, `... and ${hiddenCount} more errors hidden.`))
+  }
   feedback.append(heading, list)
 }
 
