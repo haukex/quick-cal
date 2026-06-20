@@ -1,25 +1,4 @@
-import {
-  addDays,
-  differenceInCalendarMonths,
-  eachMonthOfInterval,
-  eachWeekOfInterval,
-  endOfMonth,
-  endOfWeek,
-  format,
-  getDate,
-  getISOWeek,
-  isAfter,
-  isBefore,
-  isSameMonth,
-  isValid,
-  max,
-  min,
-  parse,
-  startOfDay,
-  startOfMonth,
-  startOfWeek,
-  subYears,
-} from 'date-fns'
+import * as d from 'date-fns'
 
 export type WeekStartsOn = 0 | 1
 
@@ -79,9 +58,9 @@ function validateFormat(dateFormat: string, referenceDate: Date): string | null 
   }
 
   try {
-    const sampleText = format(FORMAT_SAMPLE, dateFormat)
-    const sampleDate = parse(sampleText, dateFormat, referenceDate)
-    return isValid(sampleDate) ? null : 'The date format cannot produce a valid date.'
+    const sampleText = d.format(FORMAT_SAMPLE, dateFormat)
+    const sampleDate = d.parse(sampleText, dateFormat, referenceDate)
+    return d.isValid(sampleDate) ? null : 'The date format cannot produce a valid date.'
   } catch (error: unknown) {
     return errorMessage(error)
   }
@@ -96,7 +75,7 @@ export function parseDateInput(
   dateFormat: string,
   today: Date = new Date(),
 ): ParsedDateInput {
-  const referenceDate = subYears(startOfDay(today), 49)
+  const referenceDate = d.subYears(d.startOfDay(today), 49)
   const formatError = validateFormat(dateFormat, referenceDate)
 
   if (formatError !== null) {
@@ -117,8 +96,8 @@ export function parseDateInput(
     if (value.length === 0) continue
 
     try {
-      const date = parse(value, dateFormat, referenceDate)
-      if (!isValid(date)) {
+      const date = d.parse(value, dateFormat, referenceDate)
+      if (!d.isValid(date)) {
         errors.push({
           line: index + 1,
           value,
@@ -127,7 +106,7 @@ export function parseDateInput(
         continue
       }
 
-      const dateKey = format(date, 'yyyy-MM-dd')
+      const dateKey = d.format(date, 'yyyy-MM-dd')
       dates.push(date)
       occurrences.set(dateKey, (occurrences.get(dateKey) ?? 0) + 1)
     } catch (error: unknown) {
@@ -151,15 +130,15 @@ function buildWeek(
   firstSelectedWeek: Date,
   lastSelectedWeek: Date,
 ): CalendarWeek {
-  const dates = Array.from({ length: 7 }, (_, index) => addDays(weekStart, index))
+  const dates = Array.from({ length: 7 }, (_, index) => d.addDays(weekStart, index))
   const thursdayOffset = weekStartsOn === 0 ? 4 : 3
   const days = dates.map(date => {
-    const dateKey = format(date, 'yyyy-MM-dd')
+    const dateKey = d.format(date, 'yyyy-MM-dd')
     return {
       dateKey,
-      dayNumber: getDate(date),
-      label: format(date, 'EEEE, MMMM d, yyyy'),
-      inMonth: isSameMonth(date, month),
+      dayNumber: d.getDate(date),
+      label: d.format(date, 'EEEE, MMMM d, yyyy'),
+      inMonth: d.isSameMonth(date, month),
       occurrences: occurrences.get(dateKey) ?? 0,
     }
   })
@@ -169,12 +148,12 @@ function buildWeek(
     ? 'single'
     : selectedDayCount > 1
       ? 'multiple'
-      : isAfter(weekStart, firstSelectedWeek) && isBefore(weekStart, lastSelectedWeek)
+      : d.isAfter(weekStart, firstSelectedWeek) && d.isBefore(weekStart, lastSelectedWeek)
         ? 'gap'
         : null
 
   return {
-    isoWeek: getISOWeek(addDays(weekStart, thursdayOffset)),
+    isoWeek: d.getISOWeek(d.addDays(weekStart, thursdayOffset)),
     selectedDayCount,
     highlight,
     days,
@@ -189,11 +168,11 @@ export function buildCalendarMonths(
 ): CalendarBuildResult {
   if (dates.length === 0) return { months: [], rangeError: null }
 
-  const firstDate = min(Array.from(dates))
-  const lastDate = max(Array.from(dates))
-  const firstMonth = startOfMonth(firstDate)
-  const lastMonth = startOfMonth(lastDate)
-  const monthCount = differenceInCalendarMonths(lastMonth, firstMonth) + 1
+  const firstDate = d.min(Array.from(dates))
+  const lastDate = d.max(Array.from(dates))
+  const firstMonth = d.startOfMonth(firstDate)
+  const lastMonth = d.startOfMonth(lastDate)
+  const monthCount = d.differenceInCalendarMonths(lastMonth, firstMonth) + 1
 
   if (monthCount > maxMonths) {
     return {
@@ -203,12 +182,12 @@ export function buildCalendarMonths(
   }
 
   const weekOptions = { weekStartsOn }
-  const firstSelectedWeek = startOfWeek(firstDate, weekOptions)
-  const lastSelectedWeek = startOfWeek(lastDate, weekOptions)
-  const months = eachMonthOfInterval({ start: firstMonth, end: lastMonth }).map(month => {
-    const gridStart = startOfWeek(startOfMonth(month), weekOptions)
-    const gridEnd = endOfWeek(endOfMonth(month), weekOptions)
-    const weeks = eachWeekOfInterval(
+  const firstSelectedWeek = d.startOfWeek(firstDate, weekOptions)
+  const lastSelectedWeek = d.startOfWeek(lastDate, weekOptions)
+  const months = d.eachMonthOfInterval({ start: firstMonth, end: lastMonth }).map(month => {
+    const gridStart = d.startOfWeek(d.startOfMonth(month), weekOptions)
+    const gridEnd = d.endOfWeek(d.endOfMonth(month), weekOptions)
+    const weeks = d.eachWeekOfInterval(
       { start: gridStart, end: gridEnd },
       weekOptions,
     ).map(weekStart => buildWeek(
@@ -221,9 +200,9 @@ export function buildCalendarMonths(
     ))
 
     return {
-      key: format(month, 'yyyy-MM'),
-      title: format(month, 'MMMM yyyy'),
-      hasSelection: dates.some(date => isSameMonth(date, month)),
+      key: d.format(month, 'yyyy-MM'),
+      title: d.format(month, 'MMMM yyyy'),
+      hasSelection: dates.some(date => d.isSameMonth(date, month)),
       weeks,
     }
   })
