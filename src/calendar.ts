@@ -6,6 +6,7 @@ import {
   endOfMonth,
   endOfWeek,
   format,
+  getDate,
   getISOWeek,
   isAfter,
   isBefore,
@@ -156,7 +157,7 @@ function buildWeek(
     const dateKey = format(date, 'yyyy-MM-dd')
     return {
       dateKey,
-      dayNumber: date.getDate(),
+      dayNumber: getDate(date),
       label: format(date, 'EEEE, MMMM d, yyyy'),
       inMonth: isSameMonth(date, month),
       occurrences: occurrences.get(dateKey) ?? 0,
