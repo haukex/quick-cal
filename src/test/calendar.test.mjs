@@ -3,6 +3,8 @@ import { describe, it } from 'node:test'
 
 import {
   MAX_MONTHS,
+  MONDAY,
+  SUNDAY,
   buildCalendarMonths,
   parseDateInput,
 } from '../calendar.ts'
@@ -65,7 +67,7 @@ describe('parseDateInput', () => {
 describe('buildCalendarMonths', () => {
   it('builds the inclusive month range and marks selected months', () => {
     const parsed = validInput('2024-01-31\n2024-03-01', 'yyyy-MM-dd')
-    const result = buildCalendarMonths(parsed.dates, parsed.occurrences, 1)
+    const result = buildCalendarMonths(parsed.dates, parsed.occurrences, MONDAY)
 
     assert.equal(result.rangeError, null)
     assert.deepEqual(result.months.map(month => month.key), [
@@ -78,7 +80,7 @@ describe('buildCalendarMonths', () => {
 
   it('uses ISO weeks across the ISO week-year boundary', () => {
     const parsed = validInput('2020-12-31\n2021-01-01', 'yyyy-MM-dd')
-    const result = buildCalendarMonths(parsed.dates, parsed.occurrences, 1)
+    const result = buildCalendarMonths(parsed.dates, parsed.occurrences, MONDAY)
     const january = result.months.find(month => month.key === '2021-01')
     const selectedWeek = january?.weeks.find(week => week.highlight === 'multiple')
 
@@ -87,7 +89,7 @@ describe('buildCalendarMonths', () => {
 
   it('labels Sunday-first rows using the row Thursday', () => {
     const parsed = validInput('2021-01-01', 'yyyy-MM-dd')
-    const result = buildCalendarMonths(parsed.dates, parsed.occurrences, 0)
+    const result = buildCalendarMonths(parsed.dates, parsed.occurrences, SUNDAY)
     const firstWeek = result.months[0]?.weeks[0]
 
     assert.equal(firstWeek?.days[0]?.dateKey, '2020-12-27')
@@ -101,12 +103,12 @@ describe('buildCalendarMonths', () => {
     const oneDayWeek = buildCalendarMonths(
       oneDayRepeated.dates,
       oneDayRepeated.occurrences,
-      1,
+      MONDAY,
     ).months[0]?.weeks.find(week => week.days.some(day => day.dateKey === '2024-01-10'))
     const twoDayWeek = buildCalendarMonths(
       twoDays.dates,
       twoDays.occurrences,
-      1,
+      MONDAY,
     ).months[0]?.weeks.find(week => week.days.some(day => day.dateKey === '2024-01-10'))
 
     assert.equal(oneDayWeek?.highlight, 'single')
@@ -117,7 +119,7 @@ describe('buildCalendarMonths', () => {
 
   it('marks empty weeks inside the selected range as gaps', () => {
     const parsed = validInput('2024-01-10\n2024-01-24', 'yyyy-MM-dd')
-    const january = buildCalendarMonths(parsed.dates, parsed.occurrences, 1).months[0]
+    const january = buildCalendarMonths(parsed.dates, parsed.occurrences, MONDAY).months[0]
     const highlights = january?.weeks.map(week => week.highlight)
     const selectedDayCounts = january?.weeks.map(week => week.selectedDayCount)
 
@@ -130,11 +132,11 @@ describe('buildCalendarMonths', () => {
     const rejected = validInput('2000-01-01\n2050-01-01', 'yyyy-MM-dd')
 
     assert.equal(
-      buildCalendarMonths(accepted.dates, accepted.occurrences, 1).months.length,
+      buildCalendarMonths(accepted.dates, accepted.occurrences, MONDAY).months.length,
       MAX_MONTHS,
     )
     assert.match(
-      buildCalendarMonths(rejected.dates, rejected.occurrences, 1).rangeError ?? '',
+      buildCalendarMonths(rejected.dates, rejected.occurrences, MONDAY).rangeError ?? '',
       /601 months/u,
     )
   })

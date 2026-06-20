@@ -1,6 +1,9 @@
 import * as d from 'date-fns'
 
-export type WeekStartsOn = 0 | 1
+export const SUNDAY = 0
+export const MONDAY = 1
+
+export type WeekStartsOn = typeof SUNDAY | typeof MONDAY
 
 export interface InputError {
   readonly line: number
@@ -131,7 +134,7 @@ function buildWeek(
   lastSelectedWeek: Date,
 ): CalendarWeek {
   const dates = Array.from({ length: 7 }, (_, index) => d.addDays(weekStart, index))
-  const thursdayOffset = weekStartsOn === 0 ? 4 : 3
+  const thursdayOffset = weekStartsOn === SUNDAY ? 4 : 3
   const days = dates.map(date => {
     const dateKey = d.format(date, 'yyyy-MM-dd')
     return {

@@ -1,6 +1,8 @@
 import './styles.css'
 
 import {
+  MONDAY,
+  SUNDAY,
   buildCalendarMonths,
   parseDateInput,
   type CalendarDay,
@@ -30,7 +32,7 @@ if (!(calendarElement instanceof HTMLDivElement)) throw new Error('Missing calen
 const calendar = calendarElement
 
 const WEEKDAY_NAMES = {
-  0: [
+  [SUNDAY]: [
     ['S', 'Sunday'],
     ['M', 'Monday'],
     ['T', 'Tuesday'],
@@ -39,7 +41,7 @@ const WEEKDAY_NAMES = {
     ['F', 'Friday'],
     ['S', 'Saturday'],
   ],
-  1: [
+  [MONDAY]: [
     ['M', 'Monday'],
     ['T', 'Tuesday'],
     ['W', 'Wednesday'],
@@ -63,7 +65,7 @@ function makeElement<K extends keyof HTMLElementTagNameMap>(
 
 function selectedWeekStart(): WeekStartsOn {
   const selected = document.querySelector('input[name="week-start"]:checked')
-  return selected instanceof HTMLInputElement && selected.value === '0' ? 0 : 1
+  return selected instanceof HTMLInputElement && selected.value === String(SUNDAY) ? SUNDAY : MONDAY
 }
 
 function setFeedback(messages: readonly string[]): void {
